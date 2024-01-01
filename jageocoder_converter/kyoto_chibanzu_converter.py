@@ -63,12 +63,10 @@ class KyotoChibanzuConverter(BaseConverter):
         )
         return super().confirm(terms)
 
-    # TODO: not implemented
     def process_line(self, aza_code, ku_name, town_name, chiban, centroid):
         """
         add an address node.
         """
-        print(centroid)
         x, y = centroid
         note = 'aza_code:{}'.format(aza_code)
         names = [

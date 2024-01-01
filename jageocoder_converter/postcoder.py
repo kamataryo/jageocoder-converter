@@ -74,6 +74,11 @@ class PostCoder(BaseConverter):
                         for args in reader:
                             citycode, postalcode, oaza = \
                                 args[0], args[2], args[8]
+                            # 認識できない市区町村コードでクラッシュすることを避ける
+                            # https://github.com/t-sagara/jageocoder-converter/issues/7
+                            # このフォークでは京都だけにフォーカスするので、特に処置をせず continue とする
+                            if citycode not in self.jiscodes:
+                                continue
                             if '掲載がない' in oaza:
                                 oaza = ''
 

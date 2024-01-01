@@ -16,6 +16,7 @@ from jageocoder_converter.base_registry import BaseRegistryConverter
 from jageocoder_converter.chiban_converter import ChibanConverter
 from jageocoder_converter.data_manager import DataManager
 from jageocoder_converter.postcoder import PostCoder
+from jageocoder_converter.kyoto_chibanzu_converter import KyotoChibanzuConverter
 
 __all__ = [
     BaseConverter,
@@ -50,6 +51,7 @@ def convert(
     use_oaza: bool = True,
     use_gaiku: bool = True,
     use_geolonia: bool = True,
+    use_kyoto_chibanzu: bool = True,
     use_jusho: bool = True,
     use_basereg: bool = True,
     use_chiban: bool = True,
@@ -134,6 +136,20 @@ def convert(
         converters.append(converter)
     else:
         converter.escape_texts('geolonia')
+
+    if use_kyoto_chibanzu:
+        converter = KyotoChibanzuConverter(
+            manager=manager,
+            input_dir=os.path.join(download_dir, 'kyoto_chibanzu'),
+            output_dir=output_dir,
+            priority=5,
+            targets=targets,
+            quiet=quiet
+        )
+        converter.unescape_texts('kyoto_chibanzu')
+        converters.append(converter)
+    else:
+        converter.escape_texts('kyoto_chibanzu')
 
     converter = JushoConverter(
         manager=manager,

@@ -68,8 +68,17 @@ class KyotoChibanzuConverter(BaseConverter):
         """
         add an address node.
         """
-        lng, lat = centroid
-        print(aza_code, ku_name, town_name, chiban, lng, lat)
+        print(centroid)
+        x, y = centroid
+        note = 'aza_code:{}'.format(aza_code)
+        names = [
+            (AddressLevel.PREF, '京都府'),
+            (AddressLevel.CITY, '京都市'),
+            (AddressLevel.WARD, ku_name),
+            (AddressLevel.OAZA, town_name),
+            (AddressLevel.BLOCK, chiban)
+        ]
+        self.print_line(names, x, y, note)
 
     def convert(self):
         """
@@ -123,19 +132,23 @@ class KyotoChibanzuConverter(BaseConverter):
         os.system(command)
 
         # convert
-        with shapefile.Reader(target_shp_entry) as shp:
-            for shprec in shp.iterShapeRecords():
-              shp = shprec.shape
-              rec = shprec.record
-              if shp.shapeTypeName == 'POLYGON':
-                aza_code = rec[0]
-                chiban = rec[1]
-                if aza_code in town_map:
-                  geom = shp.__geo_interface__
-                  polygon_centroid = get_polygon_centroid(geom)
-                  ku_name = town_map[aza_code]['ku']
-                  town_name = town_map[aza_code]['town']
-                  self.process_line(aza_code, ku_name, town_name, chiban, polygon_centroid)
+        with open(output_filepath, 'w', encoding='utf-8') as fout:
+          self.set_fp(fout)
+          logger.debug("Reading from {}".format(input_zipfilepath))
+
+          with shapefile.Reader(target_shp_entry) as shp:
+              for shprec in shp.iterShapeRecords():
+                shp = shprec.shape
+                rec = shprec.record
+                if shp.shapeTypeName == 'POLYGON':
+                  aza_code = rec[0]
+                  chiban = rec[1]
+                  if aza_code in town_map:
+                    geom = shp.__geo_interface__
+                    polygon_centroid = get_polygon_centroid(geom)
+                    ku_name = town_map[aza_code]['ku']
+                    town_name = town_map[aza_code]['town']
+                    self.process_line(aza_code, ku_name, town_name, chiban, polygon_centroid)
 
     def download_files(self):
         """

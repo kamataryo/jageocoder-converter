@@ -67,6 +67,8 @@ class KyotoChibanzuConverter(BaseConverter):
         """
         add an address node.
         """
+        if(centroid == None):
+            return
         x, y = centroid
         note = 'aza_code:{}'.format(aza_code)
         names = [

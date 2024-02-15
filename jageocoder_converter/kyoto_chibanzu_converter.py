@@ -71,14 +71,21 @@ class KyotoChibanzuConverter(BaseConverter):
             return
         x, y = centroid
         note = 'aza_code:{}'.format(aza_code)
-        names = [
-            (AddressLevel.PREF, '京都府'),
-            (AddressLevel.CITY, '京都市'),
-            (AddressLevel.WARD, ku_name),
-            (AddressLevel.OAZA, town_name),
-            (AddressLevel.BLOCK, chiban)
-        ]
-        self.print_line(names, x, y, note)
+        chiban_parts = chiban.split('-')
+
+        if len(chiban_parts) > 2:
+          print(chiban)
+          raise RuntimeError('DEBUG: 予期せぬ地番format: {}'.format(chiban))
+        elif len(chiban_parts) == 2:
+          names = [
+              (AddressLevel.PREF, '京都府'),
+              (AddressLevel.CITY, '京都市'),
+              (AddressLevel.WARD, ku_name),
+              (AddressLevel.OAZA, town_name),
+              (AddressLevel.BLOCK, chiban_parts[0]),
+              (AddressLevel.BLD, chiban_parts[1]) if chiban_parts[1] else '',
+          ]
+          self.print_line(names, x, y, note)
 
     def convert(self):
         """
